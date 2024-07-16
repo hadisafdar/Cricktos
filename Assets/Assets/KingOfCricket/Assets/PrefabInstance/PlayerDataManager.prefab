@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1272427418511207
+GameObject:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Component:
+  - component: {fileID: 4335355663466026}
+  - component: {fileID: 114994526664414379}
+  m_Layer: 0
+  m_Name: PlayerDataManager
+  m_TagString: PlayerDataManager
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4335355663466026
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272427418511207}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -0, z: -0}
+--- !u!114 &114994526664414379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272427418511207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b62479efeaa7cc383f64155d3428b402, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  startingSceneNumber: 0
+  playerData:
+    gameLevels: []
+    currentBatId: 0
+  selectedLevel:
+    levelNumber: 0
+    matchCategory: 0
+    star1_matchObjective: 0
+    star1_matchObjectiveValue: 0
+    star2_matchObjective: 0
+    star2_matchObjectiveValue: 0
+    star3_matchObjective: 0
+    star3_matchObjectiveValue: 0
+    matchName:
+    playerTeamKey:
+    opponentTeamKey:
+    maxOvers: 0
+    oversComplete: 0
+    ballsComplete: 0
+    currentScore: 0
+    maxWickets: 0
+    wicketsLost: 0
+    matchYear: 0
+    matchDate:
+    isMatchHomeGame: 0
+    matchPreview:
+    isUnlocked: 0
+    hasPlayedLevelBefore: 0
+    levelPlayCount: 0
+    successMsg:
+    failureMsg:
+    achievedObjectives: []
+    starsAchieved: 0
+    starsAchieved_Temp: 0
+    isRewardLevel: 0
+    rewardClaimed: 0
+    difficulty: 0
