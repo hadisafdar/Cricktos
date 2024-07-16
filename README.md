@@ -1,9 +1,10 @@
-# Cricktoss
+# Cricktos
 
 **Note:** The code is pushed into the master branch. Kindly switch the branch.
 
 ## Description
-Cricktos is a---
+A cricket game where you truly own your players and gear, and can trade them freely 
+Compete against other players from around the globe.
 
 ## Dev Progress
 - [x] Initial prototype with multiplayer matchmaking
