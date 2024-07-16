@@ -1,23 +1,24 @@
 using System.Collections;
 using UnityEngine;
-//using Aptos.Accounts;
-//using Aptos.Unity.Rest;
-//using Aptos.Unity.Rest.Model;
+using Aptos.Accounts;
+using Aptos.Unity.Rest;
+using Aptos.Unity.Rest.Model;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
 
 public class WalletController : MonoBehaviour
 {
 
 
-    public string WalletAddress = "1J7mdg5rbQyUHENYdx39WVWK7fsLpEoXZy";
-    public int Tokens;
+    [ReadOnly]public string WalletAddress = "1J7mdg5rbQyUHENYdx39WVWK7fsLpEoXZy";
+    [ReadOnly]public int Tokens;
 
     private static string faucetEndpoint = "https://faucet.testnet.aptoslabs.com";
     private static string RestClient = "https://api.testnet.aptoslabs.com/accounts/{address}/tokens";
-    //private Account MyAccount;
+    private Account myAccount;
 
     public Button WalletButton;
 
@@ -37,34 +38,26 @@ public class WalletController : MonoBehaviour
 
     public void FundWallet()
     {
-        /*if (MyAccount != null)
+        if (myAccount != null)
         {
             StartCoroutine(FundAliceAccount());
         }
         else
         {
-            Debug.LogError("MyAccount is not initialized. Generate a wallet first.");
-        }*/
-        DemoFundAccount();
+            Debug.LogError("myAccount is not initialized. Generate a wallet first.");
+        }
 
 
     }
 
-    //Simulate a fund account;
-    private void DemoFundAccount()
-    {
-        Tokens = 100000000;
-        TokensText.SetText(Tokens.ToString());
-        TokensTextWalletMenu.SetText("$" + Tokens);
-        WalletButton.gameObject.SetActive(false);
-    }
+   
 
     IEnumerator FundAliceAccount()
     {
-        yield break;
-        /*if (MyAccount == null)
+      
+        if (myAccount == null)
         {
-            Debug.LogError("MyAccount is null. Exiting coroutine.");
+            Debug.LogError("myAccount is null. Exiting coroutine.");
             yield break;  // Exit the coroutine
         }
 
@@ -75,7 +68,7 @@ public class WalletController : MonoBehaviour
         {
             success = _success;
             responseInfo = _responseInfo;
-        }, MyAccount.AccountAddress.ToString(), 100000000, faucetEndpoint));
+        }, myAccount.AccountAddress.ToString(), 100000000, faucetEndpoint));
 
         yield return fundAccount;
 
@@ -88,14 +81,19 @@ public class WalletController : MonoBehaviour
             Debug.Log("Successfully funded account.");
             var output = JsonUtility.ToJson(responseInfo, true);
             Debug.Log(output);
-        }*/
+            Tokens = 100000000;
+            WalletButton.gameObject.SetActive(false);
+            TokensText.SetText(Tokens.ToString());
+            TokensTextWalletMenu.SetText("$"+Tokens.ToString());
+        }
     }
 
     public void GenerateWallet()
     {
-        //Account alice = Account.Generate();
-        //MyAccount = alice;
-        //Debug.Log($"Generated Wallet Address: {alice.AccountAddress.ToString()}");
+        Account alice = Account.Generate();
+        myAccount = alice;
+        WalletAddress = myAccount.AccountAddress.ToString();
+        Debug.Log($"Generated Wallet Address: {WalletAddress}");
         WalletAddressText?.SetText(WalletAddress);
         ButtonText.SetText("Fund Wallet");
         WalletButton.onClick.RemoveAllListeners();

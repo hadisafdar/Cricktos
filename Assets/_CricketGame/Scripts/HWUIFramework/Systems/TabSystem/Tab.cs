@@ -10,8 +10,9 @@ namespace HyyderWorks.UI
 {
     public class Tab : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
-
+        [Header("Data")]
         [SerializeField] private string tabName;
+        [SerializeField] private Sprite iconSprite;
         [SerializeField] private float delay;
         [SerializeField] private TabGroup tabGroup;
 
@@ -20,7 +21,7 @@ namespace HyyderWorks.UI
         [BoxGroup("UI Settings")]
         public Image icon;
         [BoxGroup("UI Settings")]
-        public Image tabGFX;
+        public Image background;
 
 
 
@@ -60,7 +61,7 @@ namespace HyyderWorks.UI
 
             if (isStartTab)
             {
-                Select();
+                tabGroup.OnTabSelected(this);
             }
             SetText();
 
@@ -155,8 +156,12 @@ namespace HyyderWorks.UI
             if (page)
             {
                 page.name = TabName + "[Page]";
+                page.SetTitle(TabName);
             }
-
+            if (iconSprite && icon)
+            {
+                icon.sprite = iconSprite;
+            }
         }
 
     }

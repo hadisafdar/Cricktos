@@ -3,13 +3,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-
-
-
+using DG.Tweening;
 
 namespace HyyderWorks.UI
 {
-
     public enum CurrentTabState
     {
         Hover,
@@ -17,13 +14,10 @@ namespace HyyderWorks.UI
         Inactive
     }
 
-
     public class TabGroup : MonoBehaviour
     {
-
         [SerializeField] private string tabGroupName;
         [SerializeField] private bool isDefaultTabGroup;
-
 
         public event Action<string> OnTabSelect;
 
@@ -41,37 +35,36 @@ namespace HyyderWorks.UI
         [BoxGroup("Tab Text Display Setting")]
         [SerializeField] private Color tabInactiveTextColor;
 
-        private Tab activeTabButton;
+        [Header("Animation Settings")]
+        [SerializeField] private float selectedTabScale = 1.2f;
+        [SerializeField] private float animationDuration = 0.3f;
+        [SerializeField] private Ease animationTween;
 
-        private List<Tab> tabButtons;
 
         [Header("Events")]
         public UnityEvent onTabGroupOpenedEvent;
         public UnityEvent onTabGroupClosedEvent;
-
 
         [SerializeField] private bool m_Debugging;
         [ShowIf("m_Debugging")]
         [SerializeField] private CurrentTabState m_CurrentTabState;
         [SerializeField, ReadOnly] private TabGroup m_ActiveTabGroup;
         [SerializeField, ReadOnly] private Tab m_ActiveTab;
-
-
-
+        
+        
+        private Tab activeTabButton;
+        private List<Tab> tabButtons;
         public static Stack<TabGroup> TabGroupsStack;
         public static event Action<bool> EndOfStackEvent;
 
 
-
         private void Awake()
         {
-
             if (isDefaultTabGroup)
             {
                 AddToStack();
             }
         }
-       
 
         public void Subscribe(Tab tabButton)
         {
@@ -80,18 +73,13 @@ namespace HyyderWorks.UI
                 tabButtons = new List<Tab>();
             }
             tabButtons.Add(tabButton);
-
-
         }
-
 
         public void OnTabEnter(Tab tabButton)
         {
             ResetTabState();
             if (activeTabButton != null && tabButton == activeTabButton) return;
-            if (tabButton.tabGFX) tabButton.tabGFX.color = tabHoverColor;
-            if (tabButton.buttonText) tabButton.SetTextColor(tabHoverTextColor);
-            if (tabButton.icon) tabButton.icon.color = tabHoverTextColor;
+            SetTabVisuals(tabButton, tabHoverColor, tabHoverTextColor);
         }
 
         public void OnTabExit(Tab tabButton)
@@ -99,10 +87,7 @@ namespace HyyderWorks.UI
             ResetTabState();
             if (activeTabButton == null && tabButton != activeTabButton)
             {
-
-                if (tabButton.tabGFX) tabButton.tabGFX.color = tabInactiveColor;
-                if (tabButton.buttonText) tabButton.SetTextColor(tabInactiveTextColor);
-                if (tabButton.icon) tabButton.icon.color = tabInactiveTextColor;
+                SetTabVisuals(tabButton, tabInactiveColor, tabInactiveTextColor);
             }
         }
 
@@ -118,45 +103,29 @@ namespace HyyderWorks.UI
             ShowPage();
 
             ResetTabState();
-            if (tabButton.tabGFX) tabButton.tabGFX.color = tabSelectedColor;
-            if (tabButton.buttonText) tabButton.SetTextColor(tabSelectedTextColor);
-            if (tabButton.icon) tabButton.icon.color = tabSelectedTextColor;
+            SetTabVisuals(tabButton, tabSelectedColor, tabSelectedTextColor);
+            AnimateTabSelection(tabButton);
+
             OnTabSelect?.Invoke(tabButton.TabName);
         }
-        void ShowPage()
+
+        private void ShowPage()
         {
             foreach (Tab tabButton in tabButtons)
             {
                 if (tabButton.page == null) continue;
-                if (tabButton == activeTabButton)
-                {
-
-                    tabButton.ShowPage(true);
-                }
-                else
-                {
-                    tabButton.ShowPage(false);
-                }
+                tabButton.ShowPage(tabButton == activeTabButton);
             }
         }
 
-
-
-
-        void ResetTabState()
+        private void ResetTabState()
         {
-
             foreach (Tab tabButton in tabButtons)
             {
                 if (activeTabButton != null && tabButton.TabName.Equals(activeTabButton.TabName)) continue;
-
-                if (tabButton.tabGFX) tabButton.tabGFX.color = tabInactiveColor;
-                if (tabButton.buttonText) tabButton.SetTextColor(tabInactiveTextColor);
-                if (tabButton.icon) tabButton.icon.color = tabInactiveTextColor;
+                SetTabVisuals(tabButton, tabInactiveColor, tabInactiveTextColor);
             }
-
         }
-
 
         public void DeselectAll()
         {
@@ -164,10 +133,8 @@ namespace HyyderWorks.UI
 
             foreach (Tab tabButton in tabButtons)
             {
-
-                if (tabButton.tabGFX) tabButton.tabGFX.color = tabInactiveColor;
-                if (tabButton.buttonText) tabButton.SetTextColor(tabInactiveTextColor);
-                if (tabButton.icon) tabButton.icon.color = tabInactiveTextColor;
+                SetTabVisuals(tabButton, tabInactiveColor, tabInactiveTextColor);
+                tabButton.transform.DOScale(1f, animationDuration).SetEase(Ease.OutBack);
             }
             activeTabButton = null;
         }
@@ -185,7 +152,6 @@ namespace HyyderWorks.UI
                 EndOfStackEvent?.Invoke(false);
             }
         }
-
 
         public void CloseAll()
         {
@@ -213,7 +179,6 @@ namespace HyyderWorks.UI
                 {
                     EndOfStackEvent?.Invoke(true);
                     return; //We want to keep the default tab group
-
                 }
                 ActiveTabGroup.onTabGroupClosedEvent?.Invoke();
                 TabGroupsStack.Pop();
@@ -255,20 +220,35 @@ namespace HyyderWorks.UI
             }
             foreach (Tab tab in tabs)
             {
-                if (tab.tabGFX) tab.tabGFX.color = currentButtonColor;
-                if (tab.buttonText) tab.SetTextColor(currentButtonTextColor);
-                if (tab.icon) tab.icon.color = currentButtonTextColor;
+                SetTabVisuals(tab, currentButtonColor, currentButtonTextColor);
             }
         }
+
+        private void SetTabVisuals(Tab tab, Color backgroundColor, Color textColor)
+        {
+            if (tab.background) tab.background.color = backgroundColor;
+            if (tab.buttonText) tab.SetTextColor(textColor);
+        }
+
+        private void AnimateTabSelection(Tab tabButton)
+        {
+            tabButton.transform.DOScale(selectedTabScale, animationDuration).SetEase(Ease.OutBack);
+            foreach (Tab tab in tabButtons)
+            {
+                if (tab != tabButton)
+                {
+                    tab.transform.DOScale(1f, animationDuration).SetEase(Ease.OutBack);
+                }
+            }
+        }
+
 #if UNITY_EDITOR
         private void OnValidate()
         {
             this.name = tabGroupName + "[Tab Group]";
             if (m_Debugging)
                 SetDefaultTabState();
-
         }
 #endif
-
     }
 }
